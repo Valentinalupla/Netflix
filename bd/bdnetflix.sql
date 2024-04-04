@@ -38,3 +38,19 @@ INSERT INTO actors (name, lastName, country, birthday)
 VALUE ('Tom', 'Hanks', 'Estados Unidos', '1956-07-09'),
 ('Roberto', 'Benigni', 'Italia', '1956-10-27'),
 ('John', 'Travolta', 'Estados Unidos', '1954-02-18');
+
+SELECT * FROM movies;
+SELECT title, genre FROM movies WHERE yearMovie > 1990;
+SELECT * FROM movies WHERE category = 'Top 10';
+UPDATE movies SET yearMovie = 1997 WHERE idMovies = 2;
+
+SELECT * FROM actors;
+SELECT * FROM actors WHERE birthday >= 1950 OR birthday <= 1960;
+SELECT * FROM actors WHERE MONTHNAME(birthday) = 'october';
+SELECT name, lastName FROM actors WHERE country = 'Estados Unidos';
+
+SELECT * FROM users WHERE plan_details = 'Standard';
+
+DELETE FROM users WHERE idUsers = 2;
+
+ALTER TABLE actors ADD image VARCHAR(50);
