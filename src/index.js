@@ -27,8 +27,11 @@ server.listen(port, () => {
 
 server.get("/movies", async(req, res)=> {
   const connection = await getDBConnection();
-  const sql = "SELECT * FROM movies";
-  const [moviesResult] = await connection.query(sql); 
+  const genreFilterParam = req.query.genre;
+  const sql = "SELECT * FROM movies WHERE genre= ?";
+  const [moviesResult] = await connection.query(sql, [genreFilterParam]); 
+  
+  console.log(req.query);
   connection.end();
   res.status(200).json(
     {
@@ -37,3 +40,7 @@ server.get("/movies", async(req, res)=> {
     }
   ); 
 });
+
+server.get("/movies/:id", async(req, res)=> {
+  console.log(req.params.id);
+})
