@@ -27,28 +27,7 @@ server.listen(port, () => {
 });
 
 //ENDPOINT MOVIES
-server.get("/movies", async (req, res) => {
-  const connection = await getDBConnection();
-  const genreFilterParam = req.query.genre;
-  const sql = "SELECT * FROM movies WHERE genre= ?";
-  const [moviesResult] = await connection.query(sql, [genreFilterParam]);
-
-  console.log(req.query);
-  connection.end();
-  res.status(200).json({
-    success: true,
-    movies: moviesResult,
-  });
-});
-
-server.get("/movies/:id", async (req, res) => {
-  console.log(req.params.id);
-});
-
-//ENDPOINTS USERS
-//signup
-
-server.post("/registro", async (req, res) => {
+server.post("/sign-up", async (req, res) => {
   console.log("esto es el email y pass", req.body);
 
   const { email, password } = req.body;
@@ -75,3 +54,27 @@ server.post("/registro", async (req, res) => {
     });
   }
 });
+
+
+server.get("/movies", async (req, res) => {
+  const connection = await getDBConnection();
+  const genreFilterParam = req.query.genre;
+  const sql = "SELECT * FROM movies WHERE genre= ?";
+  const [moviesResult] = await connection.query(sql, [genreFilterParam]);
+
+  console.log(req.query);
+  connection.end();
+  res.status(200).json({
+    success: true,
+    movies: moviesResult,
+  });
+});
+
+server.get("/movies/:id", async (req, res) => {
+  console.log(req.params.id);
+});
+
+//ENDPOINTS USERS
+//signup
+
+
