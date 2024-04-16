@@ -21,40 +21,19 @@ async function getDBConnection() {
   return connection;
 }
 
+function generateToken(tokenInfo) {
+  const token = jwt.sign(tokenInfo, "secret_key_sos", {
+    expiresIn: "1h",
+  });
+  return token;
+}
+
 const port = 4000;
 server.listen(port, () => {
   console.log("Server is listening in http://localhost:" + port);
 });
 
 //ENDPOINT MOVIES
-server.post("/sign-up", async (req, res) => {
-  console.log("esto es el email y pass", req.body);
-
-  const { email, password } = req.body;
-  const connection = await getDBConnection();
-  const emailQuery = "SELECT * FROM users WHERE email = ?";
-  const [emailResult] = await connection.query(emailQuery, [email]);
-
-  // console.log("esto es algo", emailResult);
-  if (emailResult.length === 0) {
-    const passwordHashed = await bcrypt.hash(password, 10);
-    const newUserQuery = "INSERT INTO users (email, password) VALUES (?,?)";
-    const [newUserResults] = await connection.query(newUserQuery, [
-      email,
-      passwordHashed,
-    ]);
-    res.status(201).json({
-      success: true,
-      id: newUserResults.id,
-    });
-  } else {
-    res.status(400).json({
-      success: false,
-      message: "Email already registered",
-    });
-  }
-});
-
 
 server.get("/movies", async (req, res) => {
   const connection = await getDBConnection();
@@ -76,5 +55,66 @@ server.get("/movies/:id", async (req, res) => {
 
 //ENDPOINTS USERS
 //signup
+server.post("/sign-up", async (req, res) => {
+  const { email, password } = req.body;
+  const connection = await getDBConnection();
+  const emailQuery = "SELECT * FROM users WHERE email = ?";
+  const [emailResult] = await connection.query(emailQuery, [email]);
 
+  if (emailResult.length === 0) {
+    const passwordHashed = await bcrypt.hash(password, 10);
+    const newUserQuery = "INSERT INTO users (email, password) VALUES (?,?)";
+    const [newUserResults] = await connection.query(newUserQuery, [
+      email,
+      passwordHashed,
+    ]);
+    res.status(201).json({
+      success: true,
+      id: newUserResults.id,
+    });
+  } else {
+    res.status(400).json({
+      success: false,
+      message: "Email already registered",
+    });
+  }
+});
 
+//login
+server.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  const connection = await getDBConnection();
+  const emailQuery = "SELECT * FROM users WHERE email = ?";
+  const [emailResult] = await connection.query(emailQuery, [email]);
+
+  const userIsRegisterd = emailResult.length > 0;
+  if (userIsRegisterd) {
+    const isSamePassword = await bcrypt.compare(
+      password,
+      emailResult[0].password
+    );
+    console.log(password);
+    console.log(emailResult[0]);
+    if (isSamePassword) {
+      const infoToken = {
+        id: emailResult[0].id,
+        email: emailResult[0].email,
+      };
+      const token = generateToken(infoToken);
+      res.status(200).json({
+        status: true,
+        token: token,
+      });
+    } else {
+      res.status(400).json({
+        status: false,
+        message: "Invalid password",
+      });
+    }
+  } else {
+    res.status(400).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+});
