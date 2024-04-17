@@ -81,13 +81,13 @@ const App = () => {
     setLoginErrorMessage('');
     // Enviamos los datos al API
     apiUser.sendLoginToApi(loginData).then(response => {
-      if (response.success === true) {
-        setUserId(response.userId);
+      if (response.status === true) {
+        setUserId(response.token);
         // Si la usuaria introduce bien sus datos redireccionamos desde la página de login al inicio de la página
         router.redirect('/');
       } else {
         // Si la usuaria introduce mal sus datos guardamos el error que nos devuelve el API para que se pinte en la página
-        setLoginErrorMessage(response.errorMessage);
+        setLoginErrorMessage(response.message);
       }
     });
   };
